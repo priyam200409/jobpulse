@@ -1,0 +1,11 @@
+posting_id,job_title,company,location,experience,description,requirements,posted_date,source,job_url,scraped_at
+JOB001,Data Analyst,TechNova,Bangalore,0-2 years,Analyze business data and create reports using SQL and Excel.,"SQL, Excel, Power BI",2026-09-01,SampleData,https://example.com/job001,2026-09-07
+JOB002,Junior Data Analyst,DataWorks,Hyderabad,0-2 years,Work with SQL databases and build dashboards for business teams.,"SQL, Power BI, Python",2026-09-01,SampleData,https://example.com/job002,2026-09-07
+JOB003,Business Data Analyst,FinServe,Mumbai,1-3 years,Analyze financial datasets and prepare reports using Excel and Tableau.,"Excel, Tableau, SQL",2026-09-02,SampleData,https://example.com/job003,2026-09-07
+JOB004,Data Analyst,AnalyticsHub,Pune,0-2 years,"Develop dashboards and analyze large datasets using Python, SQL and Power BI.","Python, SQL, Power BI, Pandas",2026-09-02,SampleData,https://example.com/job004,2026-09-07
+JOB005,Reporting Analyst,GlobalTech,Delhi NCR,1-3 years,"Create automated reports and dashboards using Excel, SQL and Tableau.","Excel, SQL, Tableau",2026-09-03,SampleData,https://example.com/job005,2026-09-07
+JOB006,Data Analyst,CloudData,Bangalore,2-4 years,Analyze cloud data and build business intelligence dashboards.,"SQL, Python, Power BI, AWS",2026-09-03,SampleData,https://example.com/job006,2026-09-07
+JOB007,Data Analyst,InsightCorp,Noida,0-2 years,Support business decisions through data analysis and visualization.,"SQL, Excel, Power BI",2026-09-04,SampleData,https://example.com/job007,2026-09-07
+JOB008,BI Analyst,MarketIQ,Gurgaon,1-3 years,Build BI reports and dashboards using Power BI and SQL.,"Power BI, SQL, DAX, Excel",2026-09-04,SampleData,https://example.com/job008,2026-09-07
+JOB009,Data Analyst,TechSolutions,Chennai,0-2 years,Use Python and SQL to analyze customer and operational data.,"Python, SQL, Pandas, Excel",2026-09-05,SampleData,https://example.com/job009,2026-09-07
+JOB010,Junior Business Analyst,RetailData,Kolkata,0-2 years,Analyze sales data and create reports using Excel and Power BI.,"Excel, Power BI, SQL",2026-09-05,SampleData,https://example.com/job010,2026-09-07
