@@ -1,6 +1,24 @@
+# Virtual environment
 venv/
+
+# Python
 __pycache__/
 *.pyc
+
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Databases
 *.db
+
+# Jupyter
 .ipynb_checkpoints/
+
+# Raw collected data
+data/raw/
+
+# Temporary / generated files
+*.log
+.DS_Store

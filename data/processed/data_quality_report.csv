@@ -1,0 +1,25 @@
+metric,value,status
+Total records,500.0,PASS
+Unique posting IDs,500.0,PASS
+Duplicate posting IDs,0.0,PASS
+Missing posting_id (%),0.0,PASS
+Missing job_title (%),0.0,PASS
+Missing company (%),2.0,PASS
+Missing location (%),0.0,PASS
+Missing description (%),0.0,PASS
+Missing posted_date (%),0.0,PASS
+Missing source (%),0.0,PASS
+Missing job_url (%),0.0,PASS
+Empty job_title (%),0.0,PASS
+Empty company (%),2.0,PASS
+Empty location (%),0.0,PASS
+Empty description (%),0.0,PASS
+Empty job_url (%),0.0,PASS
+Short descriptions (<100 chars) (%),0.0,PASS
+Salary available (%),20.6,INFO
+Invalid posted dates,0.0,PASS
+Future posted dates,1.0,CHECK
+Stale postings (>90 days) (%),29.8,INFO
+Invalid job URLs,0.0,PASS
+Company information available (%),98.0,PASS
+Location information available (%),100.0,PASS

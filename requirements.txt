@@ -7,3 +7,4 @@ regex
 plotly
 streamlit
 pytest
+python-dotenv
