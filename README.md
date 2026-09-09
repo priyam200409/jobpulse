@@ -10,6 +10,11 @@ JobPulse is an end-to-end data analytics project that analyzes public Data Analy
 The project combines a Python data pipeline, data cleaning and validation, rule-based skill extraction, SQLite-based analytical storage, SQL and Python analytics, and an interactive Streamlit dashboard.
 
 Live Dashboard: https://jobpulse91.streamlit.app/
+## Dashboard Preview
+
+![JobPulse Dashboard - Overview](assets/dashboard1.png)
+
+![JobPulse Dashboard - Analytics](assets/dashboard2.png)
 
 
 
