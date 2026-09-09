@@ -1,5 +1,10 @@
 # JobPulse — India Data Analyst Job Market Intelligence
 
+[![Live Dashboard](https://img.shields.io/badge/Live-Dashboard-success?logo=streamlit)](https://jobpulse91.streamlit.app/)
+[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)
+[![SQL](https://img.shields.io/badge/SQL-SQLite-orange?logo=sqlite)]
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red?logo=streamlit)]
+
 JobPulse is an end-to-end data analytics project that analyzes public Data Analyst job postings in India to understand skill demand, geographic hiring patterns, experience requirements, salary availability, and relationships between commonly requested skills.
 
 The project combines a Python data pipeline, data cleaning and validation, rule-based skill extraction, SQLite-based analytical storage, SQL and Python analytics, and an interactive Streamlit dashboard.
