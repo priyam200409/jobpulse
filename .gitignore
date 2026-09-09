@@ -12,6 +12,7 @@ __pycache__/
 
 # Databases
 *.db
+!data/jobpulse.db
 
 # Jupyter
 .ipynb_checkpoints/
