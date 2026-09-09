@@ -90,6 +90,21 @@ def validate_credentials():
 # API REQUEST
 # ============================================================
 
+# ============================================================
+# API REQUEST
+# ============================================================
+
+MAX_RETRIES = 4
+
+RETRY_STATUS_CODES = {
+    429,  # Too Many Requests
+    500,  # Internal Server Error
+    502,  # Bad Gateway
+    503,  # Service Unavailable
+    504,  # Gateway Timeout
+}
+
+
 def fetch_page(page: int) -> dict:
 
     url = (
@@ -106,17 +121,61 @@ def fetch_page(page: int) -> dict:
         "content-type": "application/json",
     }
 
-    response = requests.get(
-        url,
-        params=params,
-        timeout=30,
+    for attempt in range(1, MAX_RETRIES + 1):
+
+        try:
+
+            response = requests.get(
+                url,
+                params=params,
+                timeout=30,
+            )
+
+            if response.status_code in RETRY_STATUS_CODES:
+
+                if attempt == MAX_RETRIES:
+                    response.raise_for_status()
+
+                wait_seconds = 2 ** attempt
+
+                print(
+                    f"Adzuna returned HTTP "
+                    f"{response.status_code}. "
+                    f"Retrying in "
+                    f"{wait_seconds} seconds "
+                    f"(attempt "
+                    f"{attempt}/{MAX_RETRIES})..."
+                )
+
+                time.sleep(wait_seconds)
+
+                continue
+
+            response.raise_for_status()
+
+            return response.json()
+
+        except requests.RequestException:
+
+            if attempt == MAX_RETRIES:
+                raise
+
+            wait_seconds = 2 ** attempt
+
+            print(
+                f"Request failed. "
+                f"Retrying in "
+                f"{wait_seconds} seconds "
+                f"(attempt "
+                f"{attempt}/{MAX_RETRIES})..."
+            )
+
+            time.sleep(wait_seconds)
+
+    raise RuntimeError(
+        f"Unable to fetch Adzuna page {page} "
+        f"after {MAX_RETRIES} attempts."
     )
-
-    response.raise_for_status()
-
-    return response.json()
-
-
 # ============================================================
 # NORMALIZE JOB
 # ============================================================
@@ -183,7 +242,7 @@ def normalize_job(job: dict) -> dict:
         ),
 
         "scraped_at": (
-            pd.Timestamp.utcnow()
+            pd.Timestamp.now("UTC")
             .isoformat()
         ),
 

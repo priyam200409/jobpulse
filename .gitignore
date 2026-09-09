@@ -22,3 +22,6 @@ data/raw/
 # Temporary / generated files
 *.log
 .DS_Store
+
+# Generated processed data
+data/processed/

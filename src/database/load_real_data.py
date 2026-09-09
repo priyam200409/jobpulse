@@ -1,6 +1,27 @@
+"""
+JobPulse - Incremental Database Loader
+
+Loads the latest processed JobPulse datasets into SQLite.
+
+The loader:
+
+1. Validates processed job data.
+2. Validates extracted skill relationships.
+3. Initializes the database schema.
+4. Upserts current job postings.
+5. Adds newly discovered skills.
+6. Replaces current skill mentions for affected postings.
+7. Records the ingestion run.
+8. Commits the complete operation atomically.
+9. Verifies final database totals.
+
+Run from the project root:
+
+    python -m src.database.load_real_data
+"""
+
 from pathlib import Path
 from datetime import datetime, timezone
-import sqlite3
 
 import pandas as pd
 
@@ -57,11 +78,12 @@ def initialize_database(connection):
     )
 
     connection.executescript(schema)
+
     connection.commit()
 
 
 def validate_inputs(jobs, skills_df):
-    """Validate the processed input datasets before loading."""
+    """Validate processed input datasets before loading."""
 
     required_job_columns = {
         "posting_id",
@@ -81,11 +103,13 @@ def validate_inputs(jobs, skills_df):
     }
 
     missing_job_columns = (
-        required_job_columns - set(jobs.columns)
+        required_job_columns
+        - set(jobs.columns)
     )
 
     missing_skill_columns = (
-        required_skill_columns - set(skills_df.columns)
+        required_skill_columns
+        - set(skills_df.columns)
     )
 
     if missing_job_columns:
@@ -110,7 +134,11 @@ def validate_inputs(jobs, skills_df):
             "job_skills.csv contains missing posting_id values."
         )
 
-    duplicate_jobs = jobs["posting_id"].duplicated().sum()
+    duplicate_jobs = (
+        jobs["posting_id"]
+        .duplicated()
+        .sum()
+    )
 
     if duplicate_jobs:
         raise ValueError(
@@ -127,7 +155,8 @@ def validate_inputs(jobs, skills_df):
     if invalid_skill_relationships:
         raise ValueError(
             "job_skills.csv contains skill relationships "
-            "for posting IDs that are not present in jobs_clean.csv: "
+            "for posting IDs that are not present in "
+            "jobs_clean.csv: "
             f"{invalid_skill_relationships}"
         )
 
@@ -146,10 +175,14 @@ def load_postings(connection, jobs):
         if column in jobs.columns
     ]
 
-    records = jobs[columns].where(
-        pd.notna(jobs[columns]),
-        None,
-    ).to_dict("records")
+    records = (
+        jobs[columns]
+        .where(
+            pd.notna(jobs[columns]),
+            None,
+        )
+        .to_dict("records")
+    )
 
     sql_columns = ", ".join(columns)
 
@@ -181,19 +214,28 @@ def load_postings(connection, jobs):
     """
 
     before = connection.execute(
-        "SELECT COUNT(*) FROM postings"
+        """
+        SELECT COUNT(*)
+        FROM postings
+        """
     ).fetchone()[0]
 
     connection.executemany(
         sql,
         [
-            tuple(record[column] for column in columns)
+            tuple(
+                record[column]
+                for column in columns
+            )
             for record in records
         ],
     )
 
     after = connection.execute(
-        "SELECT COUNT(*) FROM postings"
+        """
+        SELECT COUNT(*)
+        FROM postings
+        """
     ).fetchone()[0]
 
     new_records = after - before
@@ -208,14 +250,16 @@ def load_skills(connection, skills_df):
     Existing skills are left unchanged.
     """
 
-    from src.extraction.skill_dictionary import SKILL_TAXONOMY
+    from src.extraction.skill_dictionary import (
+        SKILL_TAXONOMY
+    )
 
     unique_skills = (
         skills_df["skill"]
         .dropna()
         .astype(str)
         .str.strip()
-        .loc[lambda s: s != ""]
+        .loc[lambda series: series != ""]
         .unique()
     )
 
@@ -235,18 +279,19 @@ def load_skills(connection, skills_df):
             )
         )
 
-    connection.executemany(
-        """
-        INSERT INTO skills (
-            skill_name,
-            category
+    if records:
+        connection.executemany(
+            """
+            INSERT INTO skills (
+                skill_name,
+                category
+            )
+            VALUES (?, ?)
+            ON CONFLICT(skill_name)
+            DO NOTHING
+            """,
+            records,
         )
-        VALUES (?, ?)
-        ON CONFLICT(skill_name)
-        DO NOTHING
-        """,
-        records,
-    )
 
     return len(records)
 
@@ -276,17 +321,20 @@ def load_skill_mentions(connection, skills_df):
         how="inner",
     )
 
-    mentions = merged[
-        [
-            "posting_id",
-            "skill_id",
-            "confidence",
+    mentions = (
+        merged[
+            [
+                "posting_id",
+                "skill_id",
+                "confidence",
+            ]
         ]
-    ].drop_duplicates(
-        subset=[
-            "posting_id",
-            "skill_id",
-        ]
+        .drop_duplicates(
+            subset=[
+                "posting_id",
+                "skill_id",
+            ]
+        )
     )
 
     affected_postings = (
@@ -318,7 +366,9 @@ def load_skill_mentions(connection, skills_df):
             int(row.skill_id),
             float(row.confidence),
         )
-        for row in mentions.itertuples(index=False)
+        for row in mentions.itertuples(
+            index=False
+        )
     ]
 
     if records:
@@ -372,8 +422,10 @@ def record_scrape_run(
 
 
 def main():
+    """Run the incremental database loading process."""
 
-    print("\nJobPulse - Incremental Database Load")
+    print()
+    print("JobPulse - Incremental Database Load")
     print("====================================")
 
     # ---------------------------------------------------------
@@ -390,18 +442,25 @@ def main():
             f"Skills file not found: {SKILLS_FILE}"
         )
 
-    jobs = pd.read_csv(JOBS_FILE)
+    jobs = pd.read_csv(
+        JOBS_FILE
+    )
 
-    skills_df = pd.read_csv(SKILLS_FILE)
+    skills_df = pd.read_csv(
+        SKILLS_FILE
+    )
 
-    print(f"Clean jobs found: {len(jobs)}")
+    print(
+        f"Clean jobs found: {len(jobs)}"
+    )
+
     print(
         f"Skill relationships found: "
         f"{len(skills_df)}"
     )
 
     # ---------------------------------------------------------
-    # 2. Validate
+    # 2. Validate input datasets
     # ---------------------------------------------------------
 
     validate_inputs(
@@ -409,12 +468,16 @@ def main():
         skills_df,
     )
 
+    # ---------------------------------------------------------
+    # 3. Connect to database
+    # ---------------------------------------------------------
+
     connection = get_connection()
 
     try:
 
         # -----------------------------------------------------
-        # 3. Initialize schema
+        # 4. Initialize schema
         # -----------------------------------------------------
 
         initialize_database(
@@ -422,7 +485,7 @@ def main():
         )
 
         # -----------------------------------------------------
-        # 4. Load current postings
+        # 5. Load current postings
         # -----------------------------------------------------
 
         (
@@ -434,7 +497,7 @@ def main():
         )
 
         # -----------------------------------------------------
-        # 5. Load skills
+        # 6. Load skills
         # -----------------------------------------------------
 
         skills_processed = load_skills(
@@ -443,7 +506,7 @@ def main():
         )
 
         # -----------------------------------------------------
-        # 6. Load skill relationships
+        # 7. Load current skill relationships
         # -----------------------------------------------------
 
         relationships_loaded = (
@@ -454,7 +517,7 @@ def main():
         )
 
         # -----------------------------------------------------
-        # 7. Record ingestion run
+        # 8. Record ingestion run
         # -----------------------------------------------------
 
         record_scrape_run(
@@ -466,28 +529,38 @@ def main():
         )
 
         # -----------------------------------------------------
-        # 8. Commit everything atomically
+        # 9. Commit atomically
         # -----------------------------------------------------
 
         connection.commit()
 
         # -----------------------------------------------------
-        # 9. Verification
+        # 10. Verify database totals
         # -----------------------------------------------------
 
         final_jobs = connection.execute(
-            "SELECT COUNT(*) FROM postings"
+            """
+            SELECT COUNT(*)
+            FROM postings
+            """
         ).fetchone()[0]
 
         final_skills = connection.execute(
-            "SELECT COUNT(*) FROM skills"
+            """
+            SELECT COUNT(*)
+            FROM skills
+            """
         ).fetchone()[0]
 
         final_mentions = connection.execute(
-            "SELECT COUNT(*) FROM skill_mentions"
+            """
+            SELECT COUNT(*)
+            FROM skill_mentions
+            """
         ).fetchone()[0]
 
-        print("\nDatabase Load Complete")
+        print()
+        print("Database Load Complete")
         print("----------------------")
 
         print(
@@ -510,7 +583,8 @@ def main():
             f"{relationships_loaded}"
         )
 
-        print("\nDatabase totals")
+        print()
+        print("Database totals")
         print("----------------")
 
         print(
@@ -528,7 +602,10 @@ def main():
             f"{final_mentions}"
         )
 
-        print("\nScrape run recorded successfully.")
+        print()
+        print(
+            "Scrape run recorded successfully."
+        )
 
     except Exception:
 
