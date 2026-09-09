@@ -576,11 +576,11 @@ with st.sidebar:
 
     st.markdown("### Dataset")
 
-    st.caption(f"Jobs: {TOTAL_JOBS:,}")
+    st.caption(f"Stored postings: {TOTAL_JOBS:,}")
 
     st.caption(f"Companies: {TOTAL_COMPANIES:,}")
 
-    st.caption(f"Cities: {TOTAL_CITIES:,}")
+    st.caption(f"Locations: {TOTAL_CITIES:,}")
 
     st.caption(f"Skills detected: {TOTAL_SKILLS:,}")
 
@@ -614,7 +614,7 @@ with st.sidebar:
 
     st.caption("JobPulse v1.0")
 
-    st.caption("Development dataset")
+    st.caption("Public job data")
 
 
 # ============================================================
@@ -1576,10 +1576,34 @@ elif page == "Trends":
             )
 
             st.info(
-                "No historical growth rate is being estimated "
-                "or fabricated. Growth calculations will appear "
-                "automatically as additional snapshots are collected."
+                "No historical growth rate is being estimated or fabricated. "
+                "Collect another snapshot to unlock WoW/MoM analysis, "
+                "skill growth, and historical market comparisons."
             )
+
+            if snapshot_count == 1 and not weekly_trends.empty:
+                latest_snapshot = weekly_trends.iloc[-1]
+
+                c1, c2, c3 = st.columns(3)
+
+                with c1:
+                    st.metric(
+                        "CURRENT SNAPSHOT",
+                        int(latest_snapshot["job_count"]),
+                        help="Jobs captured in the latest historical snapshot.",
+                    )
+
+                with c2:
+                    st.metric(
+                        "SNAPSHOT DATE",
+                        str(latest_snapshot["snapshot_date"])[:10],
+                    )
+
+                with c3:
+                    st.metric(
+                        "SNAPSHOTS AVAILABLE",
+                        snapshot_count,
+                    )
 
     else:
 
@@ -1619,6 +1643,13 @@ elif page == "Trends":
             "No historical weekly data is available yet."
         )
 
+    elif snapshot_count < 2:
+
+        st.info(
+            "Weekly trend visualization will appear after "
+            "a second collection snapshot is available."
+        )
+
     else:
 
         weekly_chart = weekly_trends.copy()
@@ -1650,6 +1681,10 @@ elif page == "Trends":
             yaxis_title="Jobs",
         )
 
+        fig.update_xaxes(
+            type="category",
+        )
+
         apply_plot_theme(fig, 390)
 
         st.plotly_chart(
@@ -1668,6 +1703,13 @@ elif page == "Trends":
 
         st.warning(
             "No historical monthly data is available yet."
+        )
+
+    elif snapshot_count < 2:
+
+        st.info(
+            "Monthly trend visualization will appear after "
+            "a second collection snapshot is available."
         )
 
     else:
@@ -1689,6 +1731,10 @@ elif page == "Trends":
         fig.update_layout(
             xaxis_title="Month",
             yaxis_title="Jobs",
+        )
+
+        fig.update_xaxes(
+            type="category",
         )
 
         apply_plot_theme(fig, 390)
@@ -1738,7 +1784,7 @@ elif page == "Trends":
     # HISTORICAL SKILL DEMAND
     # --------------------------------------------------------
 
-    st.subheader("Historical Skill Demand")
+    st.subheader("Latest Snapshot Skill Demand")
 
     historical_skill_trends = (
         load_historical_skill_trends()
@@ -1805,7 +1851,7 @@ elif page == "Trends":
         )
 
         st.caption(
-            f"Skill demand from the latest historical snapshot: "
+            f"Skill demand from the latest collected snapshot: "
             f"{latest_skill_date}"
         )
 
