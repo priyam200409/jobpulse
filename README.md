@@ -1,4 +1,4 @@
-# JobPulse — India Data Analyst Job Market Intelligence
+ JobPulse — India Data Analyst Job Market Intelligence
 
 <p align="center">
   <strong>Real-world job market analytics for Data Analyst roles in India</strong>
@@ -6,13 +6,12 @@
 
 <p align="center">
   <a href="https://jobpulse91.streamlit.app/">Live Dashboard</a>
-  •
-  <a href="https://github.com/priyam200409/jobpulse">GitHub Repository</a>
+ 
 </p>
 
 ---
 
-## 📌 Overview
+ Overview
 
 **JobPulse** is an end-to-end data analytics project designed to analyze the demand for Data Analyst roles in India using real public job-posting data.
 
@@ -32,10 +31,9 @@ The objective is to answer practical questions such as:
 > **Current status:** The dashboard is live and the core analytics pipeline is operational. Historical trend analysis is intentionally limited until multiple independent collection snapshots are available.
 
 ---
+ Live Demo
 
-## 🚀 Live Demo
-
-### Interactive Dashboard
+ Interactive Dashboard
 
 **[Open JobPulse Live Dashboard](https://jobpulse91.streamlit.app/)**
 
@@ -51,7 +49,7 @@ The deployed application currently provides seven analytical views:
 
 ---
 
-# 🎯 Project Objectives
+ Project Objectives
 
 JobPulse was built around five primary objectives.
 
@@ -77,7 +75,7 @@ Create a pipeline that can be rerun periodically so the project can eventually t
 
 ---
 
-# 🏗️ Architecture
+ Architecture
 
 ```text
                     ┌──────────────────────┐
