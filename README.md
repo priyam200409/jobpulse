@@ -45,6 +45,8 @@ JobPulse is deployed using Streamlit Community Cloud.
 
 Live Dashboard:
 
+DEPLOYED LINK-
+
 https://jobpulse91.streamlit.app/
 
 The dashboard currently contains seven analytical sections:
