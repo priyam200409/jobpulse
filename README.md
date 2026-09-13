@@ -27,7 +27,7 @@ JobPulse was built to analyze these requirements using real public job-posting d
 
 The project collects job postings, cleans and validates the source data, extracts structured information from job descriptions, stores the processed information in a relational database, performs analytical queries, and presents the results through an interactive dashboard.
 
-The project is designed around practical questions such as:
+The project is designed around practical questions such  as:
 
 - Which skills are most frequently requested for Data Analyst roles?
 - Which programming and business intelligence tools appear most often?
